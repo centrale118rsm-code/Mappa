@@ -4,53 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centrale Operativa 118 - Dispatch</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
-        /* STILE PROFESSIONALE */
+        /* DESIGN PROFESSIONALE DARK BLUE */
         :root { 
-            --header-bg: #0f172a; 
-            --header-text: #f8fafc;
+            --header-bg: #1e293b; 
             --accent-color: #0ea5e9;
+            --text-light: #f8fafc;
         }
         
-        body { background-color: #f1f5f9; height: 100vh; overflow: hidden; display: flex; flex-direction: column; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f1f5f9; height: 100vh; overflow: hidden; display: flex; flex-direction: column; font-family: 'Segoe UI', Arial, sans-serif; }
         
-        /* HEADER PRO */
+        /* HEADER */
         .navbar { 
             background-color: var(--header-bg); 
-            color: var(--header-text); 
-            padding: 12px 20px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: var(--text-light); 
+            padding: 10px 20px; 
             border-bottom: 3px solid var(--accent-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .navbar-brand { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; color: white !important; }
-        .navbar-text-sub { font-size: 0.8rem; opacity: 0.7; font-weight: 400; text-transform: uppercase; letter-spacing: 1px;}
         
+        .navbar-brand { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; color: white !important; }
+        
+        /* PULSANTI HEADER */
         .btn-header {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            transition: all 0.2s;
+            transition: 0.2s;
+            margin-left: 5px;
         }
-        .btn-header:hover { background: rgba(255,255,255,0.2); color: white; }
-        .btn-sms { background: #10b981; border-color: #10b981; }
-        .btn-sms:hover { background: #059669; }
+        .btn-header:hover { background: rgba(255,255,255,0.25); color: white; }
+        
+        .btn-sms { background-color: #10b981; border-color: #10b981; }
+        .btn-sms:hover { background-color: #059669; }
 
         /* PANNELLO COMANDI */
-        .control-panel { background: white; padding: 20px; border-bottom: 1px solid #e2e8f0; z-index: 10; display: flex; gap: 15px; align-items: end;}
+        .control-panel { background: white; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 15px; align-items: end; }
         
-        /* MAPPA */
+        /* MAPPE */
         .content-area { flex-grow: 1; position: relative; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* OVERLAY TRACKING */
-        #trackingContainer { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; }
+        /* OVERLAY TRACKING (LIVE) */
+        #trackingContainer { 
+            display: none; 
+            position: absolute; top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: white; z-index: 2000; 
+        }
         
-        /* TABS */
-        .nav-tabs .nav-link { border: none; color: #64748b; font-weight: 600; padding: 10px 20px; }
+        /* TABS DI NAVIGAZIONE */
+        .nav-tabs .nav-link { border: none; color: #64748b; font-weight: 600; }
         .nav-tabs .nav-link.active { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); background: transparent; }
     </style>
 </head>
@@ -58,26 +67,26 @@
 
 <nav class="navbar d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center gap-3">
-        <div class="bg-primary rounded p-2 text-white"><i class="fa-solid fa-star-of-life fa-lg"></i></div>
-        <div style="line-height: 1.2;">
-            <div class="navbar-brand mb-0">CENTRALE 118</div>
-            <div class="navbar-text-sub">Sistema Gestione Emergenze</div>
+        <div class="bg-primary rounded p-2 text-white shadow"><i class="fa-solid fa-star-of-life fa-lg"></i></div>
+        <div>
+            <div class="navbar-brand mb-0 lh-1">CENTRALE 118</div>
+            <small class="text-secondary text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Gestione Emergenze</small>
         </div>
     </div>
     
-    <div class="d-flex gap-2">
-        <button class="btn btn-header btn-sms d-flex align-items-center gap-2 px-3" data-bs-toggle="modal" data-bs-target="#smsModal">
-            <i class="fa-brands fa-whatsapp fa-lg"></i> 
+    <div class="d-flex align-items-center">
+        <button class="btn btn-header btn-sms d-flex align-items-center gap-2 px-3 py-2 rounded" data-bs-toggle="modal" data-bs-target="#smsModal">
+            <i class="fa-brands fa-whatsapp fa-xl"></i> 
             <span class="d-none d-md-block fw-bold">LOCALIZZA CELLULARE</span>
         </button>
 
-        <button class="btn btn-header d-flex align-items-center gap-2" onclick="toggleTrackingMap()">
+        <button class="btn btn-header d-flex align-items-center gap-2 px-3 py-2 rounded" onclick="toggleTrackingMap()">
             <i class="fa-solid fa-map-location-dot"></i> 
             <span class="d-none d-md-block">TRACKING LIVE</span>
         </button>
         
-        <button class="btn btn-header" data-bs-toggle="modal" data-bs-target="#ipaModal" title="Archivio IPA">
-            <i class="fa-solid fa-database"></i>
+        <button class="btn btn-header px-3 py-2 rounded" data-bs-toggle="modal" data-bs-target="#ipaModal" title="Archivio IPA">
+            <i class="fa-solid fa-bars"></i>
         </button>
     </div>
 </nav>
@@ -86,15 +95,15 @@
     <div class="flex-grow-1">
         <label class="small text-muted fw-bold text-uppercase mb-1">Indirizzo Target</label>
         <div class="input-group">
-            <span class="input-group-text bg-light"><i class="fa-solid fa-location-dot text-danger"></i></span>
-            <input type="text" id="inputAddress" class="form-control fw-bold" placeholder="Cerca indirizzo..." value="Ospedale di Stato">
+            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-location-dot text-danger"></i></span>
+            <input type="text" id="inputAddress" class="form-control fw-bold border-start-0" placeholder="Es. Via Piana, San Marino" value="Ospedale di Stato">
         </div>
     </div>
     <div class="flex-grow-1">
-        <label class="small text-muted fw-bold text-uppercase mb-1">Dati Paziente</label>
-        <input type="text" id="inputName" class="form-control" placeholder="Nome, Cognome, Codice...">
+        <label class="small text-muted fw-bold text-uppercase mb-1">Paziente / Codice</label>
+        <input type="text" id="inputName" class="form-control" placeholder="Dati del paziente...">
     </div>
-    <button class="btn btn-danger fw-bold px-4 py-2" id="btnSend">
+    <button class="btn btn-danger fw-bold px-4 py-2 shadow-sm" id="btnSend">
         <i class="fa-solid fa-tower-broadcast"></i> INVIA
     </button>
 </div>
@@ -109,12 +118,13 @@
     <iframe id="mapFrame" src="about:blank"></iframe>
     
     <div id="trackingContainer">
-        <div class="position-absolute top-0 end-0 m-3 d-flex gap-2" style="z-index:9999">
-             <div class="bg-white p-2 rounded shadow text-dark small">
-                <i class="fa-solid fa-circle text-danger"></i> Richiedente
-                <i class="fa-solid fa-truck-medical text-primary ms-2"></i> Ambulanza
+        <div class="position-absolute top-0 end-0 m-3 d-flex gap-2 align-items-start" style="z-index:9999">
+             <div class="bg-white p-3 rounded shadow text-dark small border">
+                <div class="fw-bold mb-2">LEGENDA LIVE:</div>
+                <div class="d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-truck-medical text-primary"></i> Ambulanza</div>
+                <div class="d-flex align-items-center gap-2"><div style="width:12px; height:12px; background:red; border-radius:50%; box-shadow:0 0 5px red;"></div> Richiedente (SOS)</div>
             </div>
-            <button class="btn btn-dark shadow" onclick="toggleTrackingMap()">CHIUDI X</button>
+            <button class="btn btn-dark shadow fw-bold" onclick="toggleTrackingMap()">CHIUDI <i class="fa-solid fa-xmark"></i></button>
         </div>
         <div id="liveMap" style="width: 100%; height: 100%;"></div>
     </div>
@@ -124,24 +134,23 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fa-brands fa-whatsapp"></i> Invia Richiesta Posizione</h5>
+                <h5 class="modal-title"><i class="fa-brands fa-whatsapp"></i> Invia Localizzatore</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Inserisci il numero del richiedente. Verrà aperto WhatsApp Web con un link. Quando l'utente clicca, comparirà sulla mappa.</p>
+                <p>Inserisci il numero di cellulare. Verrà generato un link WhatsApp. Quando l'utente clicca, la sua posizione apparirà sulla mappa.</p>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Numero Cellulare</label>
-                    <input type="tel" id="inputPhone" class="form-control form-control-lg" placeholder="+39 333 1234567">
+                    <input type="tel" id="inputPhone" class="form-control form-control-lg" placeholder="Es. 333 1234567">
                 </div>
                 <div class="d-grid">
-                    <button class="btn btn-success fw-bold" onclick="sendLocatorLink()">
-                        INVIA LINK SU WHATSAPP
+                    <button class="btn btn-success fw-bold py-2" onclick="sendLocatorLink()">
+                        INVIA LINK WHATSAPP <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
                 <hr>
-                <div class="alert alert-secondary small mb-0">
-                    Oppure copia il link manualmente:<br>
-                    <code id="manualLink" class="user-select-all">...</code>
+                <div class="alert alert-light border small mb-0 text-muted">
+                    Link manuale: <code id="manualLink" class="user-select-all">...</code>
                 </div>
             </div>
         </div>
@@ -152,21 +161,24 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title">Dati IPA</h5>
+                <h5 class="modal-title"><i class="fa-solid fa-database"></i> Archivio IPA</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <textarea class="form-control font-monospace" rows="10" placeholder="Incolla dati..."></textarea>
+                <textarea class="form-control font-monospace" rows="15" placeholder="Incolla qui i dati IPA..."></textarea>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // --- CONFIGURAZIONE FIREBASE ---
     const firebaseConfig = {
       apiKey: "AIzaSyAu-Ow4yjxPCfw7SqqEAO1RyxB5cuB1TD0",
       authDomain: "mappa-118.firebaseapp.com",
@@ -181,23 +193,23 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- 1. LOGICA INVIO MISSIONE ---
+    // --- A. INVIO MISSIONE AL TABLET ---
     document.getElementById('btnSend').addEventListener('click', () => {
         const address = document.getElementById('inputAddress').value;
         const name = document.getElementById('inputName').value;
-        if(!address) return alert("Inserisci indirizzo");
+        if(!address) return alert("Inserisci un indirizzo!");
         
-        navigator.clipboard.writeText(address); // Copia automatica
+        navigator.clipboard.writeText(address); // Copia negli appunti
         
         set(ref(db, 'current_mission'), {
             address: address,
             name: name,
             timestamp: Date.now()
-        }).then(() => alert("Missione inviata al tablet!"));
+        }).then(() => alert("✅ Missione Inviata!"));
     });
 
-    // --- 2. LOGICA SMS LOCATOR ---
-    // Genera il link base basato sulla URL corrente
+    // --- B. SMS LOCATOR ---
+    // Calcola il link del file sos.html
     const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + '/sos.html';
     document.getElementById('manualLink').innerText = baseUrl;
 
@@ -205,17 +217,20 @@
         let phone = document.getElementById('inputPhone').value.replace(/\s+/g, '');
         if(!phone) return alert("Inserisci il numero!");
         
-        const message = `SOCCORSO 118: Clicca questo link per inviarci la tua posizione GPS immediatamente: ${baseUrl}`;
+        // Se manca il prefisso +39, aggiungilo (opzionale, ma utile)
+        if(!phone.startsWith('+') && !phone.startsWith('00')) phone = '+39' + phone;
+
+        const message = `SOCCORSO 118: Clicca questo link per inviare la tua posizione GPS: ${baseUrl}`;
         const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
         
         window.open(whatsappUrl, '_blank');
         
-        // Apre automaticamente la mappa tracking per vedere il risultato
+        // Apre la mappa tracking
         const container = document.getElementById('trackingContainer');
         if(container.style.display !== 'block') toggleTrackingMap();
     };
 
-    // --- 3. TRACKING SYSTEM (AMBULANZA + RICHIEDENTE) ---
+    // --- C. SISTEMA TRACKING (MAPPA LIVE) ---
     let map = null, ambMarker = null, callerMarker = null;
 
     window.toggleTrackingMap = function() {
@@ -225,33 +240,36 @@
     }
 
     function initMap() {
+        // Inizializza mappa su San Marino
         map = L.map('liveMap', { scrollWheelZoom: true }).setView([43.93, 12.45], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
 
-        // Icona Ambulanza
+        // --- NUOVA ICONA AMBULANZA ---
         const ambIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/2636/2636280.png', 
-            iconSize: [40, 40], iconAnchor: [20, 20]
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/2636/2636280.png', // Icona 3D Ambulanza
+            iconSize: [45, 45], // Un po' più grande
+            iconAnchor: [22, 22],
+            popupAnchor: [0, -20]
         });
         
-        // Icona Richiedente (Puntino Rosso)
+        // --- ICONA RICHIEDENTE (Punto Rosso Pulsante) ---
         const callerIcon = L.divIcon({
             className: 'custom-div-icon',
-            html: "<div style='background-color:#dc3545; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 0 10px red;'></div>",
+            html: "<div style='background-color:#dc3545; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 0 10px red; animation: pulse 1s infinite;'></div>",
             iconSize: [20, 20], iconAnchor: [10, 10]
         });
 
-        // ASCOLTO AMBULANZA
+        // ASCOLTA POSIZIONE AMBULANZA
         onValue(ref(db, 'ambulance_location'), (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 if(!ambMarker) ambMarker = L.marker([data.lat, data.lng], {icon: ambIcon}).addTo(map);
                 else ambMarker.setLatLng([data.lat, data.lng]);
-                ambMarker.bindPopup(`<b>AMB 01</b><br>${data.speed} km/h`);
+                ambMarker.bindPopup(`<b>AMB 01</b><br>Vel: ${data.speed} km/h`);
             }
         });
 
-        // ASCOLTO RICHIEDENTE (CELLULARE)
+        // ASCOLTA POSIZIONE RICHIEDENTE
         onValue(ref(db, 'caller_location'), (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -259,17 +277,17 @@
                 if(!callerMarker) callerMarker = L.marker(pos, {icon: callerIcon}).addTo(map);
                 else callerMarker.setLatLng(pos);
                 
-                callerMarker.bindPopup(`<b>RICHIEDENTE</b><br>Posizione Ricevuta!<br>${new Date(data.timestamp).toLocaleTimeString()}`).openPopup();
+                callerMarker.bindPopup(`<b>RICHIEDENTE SOS</b><br>Posizione Ricevuta!<br>Ore: ${new Date(data.timestamp).toLocaleTimeString()}`).openPopup();
                 
-                // Centra la mappa sul richiedente quando arriva la posizione
-                map.flyTo(pos, 15);
-                alert("📍 POSIZIONE RICHIEDENTE RICEVUTA!");
+                // Alert acustico o visivo qui se necessario
+                map.flyTo(pos, 15); // Vola sulla posizione
             }
         });
     }
 </script>
 
 <script>
+    // --- GESTIONE SCHEDE MAPPE ---
     const maps = {
         google: "https://maps.google.com/maps?t=&z=15&ie=UTF8&iwloc=&output=embed&q=",
         ps2: "https://mappeonline.pa.sm/maps/prontosoccorso2/",
@@ -286,14 +304,12 @@
         if(type === 'google') frame.src = maps.google + encodeURIComponent(addr);
         else {
             frame.src = maps[type];
-            if(addr) {
-                navigator.clipboard.writeText(addr);
-                // Piccolo toast notification
-            }
+            if(addr) navigator.clipboard.writeText(addr);
         }
     };
     
     window.onload = () => updateMapSource('google');
 </script>
+
 </body>
 </html>
