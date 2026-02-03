@@ -152,14 +152,19 @@
 
     function initMap() {
         // Centra su San Marino
-        map = L.map('liveMap').setView([43.93, 12.45], 13);
+        // scrollWheelZoom: true ABILITA lo zoom con la rotella
+        map = L.map('liveMap', {
+            scrollWheelZoom: true,
+            dragging: true,
+            zoomControl: true
+        }).setView([43.93, 12.45], 13);
         
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
         const ambulanceIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/2636/2636280.png', // Icona
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/2636/2636280.png', 
             iconSize: [40, 40],
             iconAnchor: [20, 20],
             popupAnchor: [0, -20]
@@ -174,8 +179,8 @@
             if (data) {
                 const latLng = [data.lat, data.lng];
                 marker.setLatLng(latLng);
-                marker.bindPopup(`<b>Ambulanza</b><br>Velocità: ${data.speed} km/h<br>Aggiornato: ${new Date(data.timestamp).toLocaleTimeString()}`).openPopup();
-                map.panTo(latLng); // Segue l'ambulanza
+                marker.bindPopup(`<b>Ambulanza</b><br>Velocità: ${data.speed} km/h`).openPopup();
+                map.panTo(latLng); 
             }
         });
     }
@@ -183,7 +188,6 @@
 
 <script>
     // --- GESTIONE MAPPE STATICHE ---
-    // URL per iframe (Google embed standard)
     const maps = {
         google: "https://maps.google.com/maps?t=&z=15&ie=UTF8&iwloc=&output=embed&q=",
         ps2: "https://mappeonline.pa.sm/maps/prontosoccorso2/",
